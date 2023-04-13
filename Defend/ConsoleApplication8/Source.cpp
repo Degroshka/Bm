@@ -16,9 +16,10 @@ int main() {
 	setlocale(LC_ALL, "Ru");
 	char x;
 	int  b, c = 1;
-	symb* s,* sf,*mo;
+	symb* s,* sf,*mo,*sr;
 	num* n,*sn;
-	s =sf=mo=new symb;
+	s =sf=mo=sr=new symb;
+	s->elem = NULL;
 	n=sn= new num;
 	n->next = new num;
 	n->next->prev = n;
@@ -32,56 +33,65 @@ int main() {
 		fin >> x;
 		s->next = new symb;
 		s->next->prev = s;
-		cout << s->elem;
 		s = s->next;
+		cout << s->prev->elem;
 		s->elem = x;
 	}
 	s->next = NULL;
+	s = s->next;
 	fin.close();
-	s = s->prev;
 	cout << endl;
-	while (s != sf) {
-		while (isdigit(s->elem)) {
-			b = s->elem - '0';
-			n->elem += b * c;
+	sf = sf->next;
+	while (sf->next != s) {
+		while (isdigit(sf->elem)) {
+			sf = sf->next;
+			sr = sf->prev;
+		}
+		while (isdigit(sr->elem)) {
+			b = sr->elem - '0';
+			n->elem +=b * c;
 			c = c * 10;
-			s = s->prev;
+			sr = sr->prev;
 		}
 		c = 1;
-		mo = s;
-		s = s->prev;
-		while (isdigit(s->elem)) {
-			b = s->elem - '0';
-			sn->elem =sn->elem+ b * c;
+		mo = sf;
+		sf = sf->next;
+		while (isdigit(sf->elem)  and sf->next!=s) {
+			sf = sf->next;
+			sr = sf->prev;
+		}sr = sf->prev;
+		while (isdigit(sr->elem)) {
+			b = sr->elem - '0';
+			sn->elem +=b * c;
 			c = c * 10;
-			s = s->prev;
+			sr = sr->prev;
+
 		}
 		switch (mo->elem) {
 			case '+':
 				cout << n->elem << '+' << sn->elem << '=';
 				n->elem += sn->elem;
-				sn->elem = NULL;
+				sn->elem = 0;
 				cout << n->elem << endl;
 				break;
 			case '-':
-				cout << sn->elem << '-' << n->elem<<'=';
-				n->elem = sn->elem - n->elem;
-				sn->elem = NULL;
+				cout << n->elem << '-' << sn->elem<<'=';
+				n->elem = n->elem - sn->elem;
+				sn->elem = 0;
 				cout << n->elem << endl;
 				break;
 			case '*':
 				cout << n->elem << '*' << sn->elem<<'=';
 				n->elem *= sn->elem;
-				sn->elem = NULL;
+				sn->elem = 0;
 				cout << n->elem << endl;
 				break;
 			case '/':
 				cout << n->elem << '/' << sn->elem << '=';
 				n->elem =n->elem/ sn->elem;
-				sn->elem = NULL;
+				sn->elem = 0;
 				cout << n->elem << endl;
 				break;
-
 		}
 	}
 }
